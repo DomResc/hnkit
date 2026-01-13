@@ -2,9 +2,9 @@
  * Service Worker for PWA Support
  */
 
-const CACHE_NAME = "hn-client-v1";
-const STATIC_CACHE = "hn-static-v1";
-const DYNAMIC_CACHE = "hn-dynamic-v1";
+const CACHE_NAME = "hn-client-v1.1";
+const STATIC_CACHE = "hn-static-v1.1";
+const DYNAMIC_CACHE = "hn-dynamic-v1.1";
 
 const STATIC_ASSETS = [
   "./",
