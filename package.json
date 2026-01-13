@@ -1,0 +1,36 @@
+{
+  "name": "hackernews-modern-client",
+  "version": "2.0.0",
+  "description": "A modern, fast, and beautiful Hacker News client built with vanilla JavaScript",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "start": "npx http-server -p 8080 -c-1 --cors",
+    "dev": "npx http-server -p 8080 -c-1 --cors -o",
+    "lint": "eslint src/js/**/*.js",
+    "format": "prettier --write \"src/**/*.{js,css,html}\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hackernews",
+    "news",
+    "client",
+    "pwa",
+    "vanilla-js",
+    "modern",
+    "spa"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.3",
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "dompurify": "^3.0.8"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

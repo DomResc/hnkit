@@ -1,0 +1,49 @@
+{
+  "name": "HackerNews Modern Client",
+  "short_name": "HN Client",
+  "description": "A modern, fast, and beautiful Hacker News client",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0e14",
+  "theme_color": "#ff6600",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["news", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Top Stories",
+      "short_name": "Top",
+      "description": "View top stories",
+      "url": "/?feed=topstories",
+      "icons": []
+    },
+    {
+      "name": "New Stories",
+      "short_name": "New",
+      "description": "View newest stories",
+      "url": "/?feed=newstories",
+      "icons": []
+    },
+    {
+      "name": "Best Stories",
+      "short_name": "Best",
+      "description": "View best stories",
+      "url": "/?feed=beststories",
+      "icons": []
+    }
+  ]
+}
