@@ -1,8 +1,8 @@
 {
-  "name": "HackerNews Modern Client",
-  "short_name": "HN Client",
-  "description": "A modern, fast, and beautiful Hacker News client",
-  "start_url": "/",
+  "name": "hnkit",
+  "short_name": "hnkit",
+  "description": "Minimal, fast Hacker News client",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#0a0e14",
   "theme_color": "#ff6600",
@@ -28,21 +28,21 @@
       "name": "Top Stories",
       "short_name": "Top",
       "description": "View top stories",
-      "url": "/?feed=topstories",
+      "url": "./?feed=topstories",
       "icons": []
     },
     {
       "name": "New Stories",
       "short_name": "New",
       "description": "View newest stories",
-      "url": "/?feed=newstories",
+      "url": "./?feed=newstories",
       "icons": []
     },
     {
       "name": "Best Stories",
       "short_name": "Best",
       "description": "View best stories",
-      "url": "/?feed=beststories",
+      "url": "./?feed=beststories",
       "icons": []
     }
   ]

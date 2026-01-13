@@ -130,10 +130,15 @@
 [data-theme="oled"] {
   --color-background: #000000;
   --color-surface: #000000;
-  --color-surface-elevated: #111111;
-  --color-surface-hover: #222222;
-  --color-border: rgba(255, 255, 255, 0.15);
-  --color-border-hover: rgba(255, 255, 255, 0.25);
+  --color-surface-elevated: #080808;
+  --color-surface-hover: #121212;
+  --color-border: #1a1a1a;
+  --color-border-hover: #333333;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
 }
 
 /* Nord Theme */
@@ -151,8 +156,11 @@
   --color-text-secondary: #d8dee9;
   --color-text-tertiary: #abb2bf;
 
-  --color-border: rgba(236, 239, 244, 0.1);
-  --color-border-hover: rgba(236, 239, 244, 0.2);
+  --color-border: rgba(236, 239, 244, 0.05);
+  --color-border-hover: rgba(236, 239, 244, 0.1);
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Hacker Theme (Matrix/Terminal) */
@@ -186,6 +194,52 @@
   --radius-2xl: 0;
 
   --font-sans: "SF Mono", Monaco, "Cascadia Code", "Courier New", monospace;
+}
+
+/* Sepia Theme (Optimized for Reading) */
+[data-theme="sepia"] {
+  --color-primary: #8b4513;
+  --color-primary-dark: #5d2e0a;
+  --color-primary-light: #a0522d;
+
+  --color-background: #f4ecd8;
+  --color-surface: #fbf5e9;
+  --color-surface-elevated: #efe3c5;
+  --color-surface-hover: #e5d5b0;
+
+  --color-text-primary: #5b4636;
+  --color-text-secondary: #705e52;
+  --color-text-tertiary: #a09084;
+
+  --color-border: rgba(91, 70, 54, 0.1);
+  --color-border-hover: rgba(91, 70, 54, 0.2);
+
+  --shadow-sm: 0 1px 2px rgba(91, 70, 54, 0.05);
+}
+
+/* High Contrast Theme (Accessibility) */
+[data-theme="high-contrast"] {
+  --color-primary: #0000ff;
+  --color-primary-dark: #00008b;
+  --color-primary-light: #4169e1;
+
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-surface-hover: #eeeeee;
+
+  --color-text-primary: #000000;
+  --color-text-secondary: #000000;
+  --color-text-tertiary: #000000;
+
+  --color-border: #000000;
+  --color-border-hover: #000000;
+
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
 }
 
 /* Compact Mode */

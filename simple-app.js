@@ -174,7 +174,7 @@
         <div class="story-stats">
           <span class="stat-item stat-score">⭐ ${item.score || 0}</span>
           <span class="stat-item stat-comments">💬 ${item.descendants || 0} comments</span>
-          <span class="stat-item">👤 ${escapeHtml(item.by || "unknown")}</span>
+          <span class="stat-item user-link" onclick="event.stopPropagation(); window.app.openUser('${escapeHtml(item.by)}')">👤 ${escapeHtml(item.by || "unknown")}</span>
         </div>
         <button class="quick-link-btn" title="Open link" onclick="event.stopPropagation(); window.open('${card.dataset.url}', '_blank')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -448,7 +448,7 @@
 
     article.innerHTML = `
       <div class="comment-header">
-        <div class="comment-author">👤 ${escapeHtml(comment.by || "unknown")}</div>
+        <div class="comment-author user-link" onclick="window.app.openUser('${escapeHtml(comment.by)}')">👤 ${escapeHtml(comment.by || "unknown")}</div>
         <div class="comment-time">${formatTimeAgo(comment.time)}</div>
       </div>
       
@@ -499,6 +499,76 @@
     }
 
     return article;
+  }
+
+  async function openUser(username) {
+    if (!username || username === "unknown") return;
+
+    try {
+      openModal('<div class="loading-comments">Loading user profile...</div>');
+
+      const user = await window.hnAPI.fetchUser(username);
+      if (!user) {
+        openModal('<div class="error">Failed to load user profile.</div>');
+        return;
+      }
+
+      const modalHTML = `
+        <div class="user-profile">
+          <div class="user-profile-header">
+            <div class="user-profile-avatar">👤</div>
+            <h2 class="user-profile-name">${escapeHtml(user.id)}</h2>
+          </div>
+          <div class="user-profile-stats">
+            <div class="user-stat">
+              <span class="user-stat-label">Karma</span>
+              <span class="user-stat-value">${user.karma || 0}</span>
+            </div>
+            <div class="user-stat">
+              <span class="user-stat-label">Joined</span>
+              <span class="user-stat-value">${formatDate(user.created)}</span>
+            </div>
+          </div>
+          ${
+            user.about
+              ? `
+            <div class="user-profile-about">
+              <h3>About</h3>
+              <div class="about-content">${user.about}</div>
+            </div>
+          `
+              : ""
+          }
+          <div class="user-profile-actions">
+            <a href="https://news.ycombinator.com/user?id=${user.id}" 
+               target="_blank" 
+               rel="noopener" 
+               class="modal-link-btn modal-hn-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              View on HN
+            </a>
+          </div>
+        </div>
+      `;
+
+      openModal(modalHTML);
+    } catch (error) {
+      console.error("Failed to load user profile:", error);
+      openModal('<div class="error">Failed to load user profile.</div>');
+    }
+  }
+
+  function formatDate(timestamp) {
+    if (!timestamp) return "unknown";
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   }
 
   function debounce(func, wait) {
@@ -554,7 +624,15 @@
   });
 
   function cycleTheme() {
-    const themes = ["dark", "light", "oled", "nord", "hacker"];
+    const themes = [
+      "dark",
+      "light",
+      "oled",
+      "nord",
+      "hacker",
+      "sepia",
+      "high-contrast",
+    ];
     const current =
       document.documentElement.getAttribute("data-theme") || "dark";
     const nextIndex = (themes.indexOf(current) + 1) % themes.length;
@@ -564,6 +642,11 @@
       elements.themeSelect.value = nextTheme;
     }
   }
+
+  // Export some functions for global use
+  window.app = {
+    openUser,
+  };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
