@@ -1,165 +1,248 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A modern, fast, and beautiful Hacker News client">
-  <meta name="theme-color" content="#ff6600">
-  
-  <title>HackerNews - Modern Client</title>
-  
-  <!-- Preconnect to API -->
-  <link rel="preconnect" href="https://hacker-news.firebaseio.com">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
-  
-  <!-- Styles -->
-  <link rel="stylesheet" href="src/css/variables.css">
-  <link rel="stylesheet" href="src/css/base.css">
-  <link rel="stylesheet" href="src/css/components.css">
-  <link rel="stylesheet" href="src/css/animations.css">
-  
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="manifest.json">
-  
-  <!-- Apple Touch Icon -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>">
-</head>
-<body>
-  <!-- Header -->
-  <header class="app-header" role="banner">
-    <div class="header-container">
-      <div class="header-brand">
-        <svg class="logo" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-          <polyline points="10 9 9 9 8 9"/>
-        </svg>
-        <h1 class="brand-title">HackerNews</h1>
-      </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A modern, fast, and beautiful Hacker News client"
+    />
+    <meta name="theme-color" content="#ff6600" />
 
-      <div class="header-controls">
-        <!-- Search -->
-        <div class="search-box">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input 
-            type="search" 
-            id="searchInput" 
-            placeholder="Search stories..." 
-            aria-label="Search stories"
-            autocomplete="off"
+    <title>HackerNews - Modern Client</title>
+
+    <!-- Preconnect to API -->
+    <link rel="preconnect" href="https://hacker-news.firebaseio.com" />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>"
+    />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="src/css/variables.css" />
+    <link rel="stylesheet" href="src/css/base.css" />
+    <link rel="stylesheet" href="src/css/components.css" />
+    <link rel="stylesheet" href="src/css/animations.css" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Apple Touch Icon -->
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="app-header" role="banner">
+      <div class="header-container">
+        <div class="header-brand">
+          <svg
+            class="logo"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
           >
-          <kbd class="search-hint">/</kbd>
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <polyline points="10 9 9 9 8 9" />
+          </svg>
+          <h1 class="brand-title">HackerNews</h1>
         </div>
 
-        <!-- Feed Selector -->
-        <select id="feedSelect" class="feed-select" aria-label="Select feed">
-          <option value="topstories">🔥 Top</option>
-          <option value="newstories">✨ New</option>
-          <option value="beststories">⭐ Best</option>
-          <option value="askstories">❓ Ask</option>
-          <option value="showstories">📢 Show</option>
-          <option value="jobstories">💼 Jobs</option>
-        </select>
+        <div class="header-controls">
+          <!-- Search -->
+          <div class="search-box">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input
+              type="search"
+              id="searchInput"
+              placeholder="Search stories..."
+              aria-label="Search stories"
+              autocomplete="off"
+            />
+            <kbd class="search-hint">/</kbd>
+          </div>
 
-        <!-- Actions -->
-        <button id="refreshBtn" class="icon-btn" aria-label="Refresh" title="Refresh (R)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="23 4 23 10 17 10"/>
-            <polyline points="1 20 1 14 7 14"/>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-          </svg>
-        </button>
+          <!-- Feed Selector -->
+          <select id="feedSelect" class="feed-select" aria-label="Select feed">
+            <option value="topstories">🔥 Top</option>
+            <option value="newstories">✨ New</option>
+            <option value="beststories">⭐ Best</option>
+            <option value="askstories">❓ Ask</option>
+            <option value="showstories">📢 Show</option>
+            <option value="jobstories">💼 Jobs</option>
+          </select>
 
-        <button id="themeToggle" class="icon-btn" aria-label="Toggle theme" title="Toggle theme (T)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-        </button>
+          <!-- Actions -->
+          <button
+            id="refreshBtn"
+            class="icon-btn"
+            aria-label="Refresh"
+            title="Refresh (R)"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="23 4 23 10 17 10" />
+              <polyline points="1 20 1 14 7 14" />
+              <path
+                d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+              />
+            </svg>
+          </button>
+
+          <button
+            id="themeToggle"
+            class="icon-btn"
+            aria-label="Toggle theme"
+            title="Toggle theme (T)"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+        </div>
       </div>
-    </div>
 
-    <!-- Loading Bar -->
-    <div class="loading-bar" id="loadingIndicator">
-      <div class="loading-bar-progress"></div>
-    </div>
-  </header>
+      <!-- Loading Bar -->
+      <div class="loading-bar" id="loadingIndicator">
+        <div class="loading-bar-progress"></div>
+      </div>
+    </header>
 
-  <!-- Main Content -->
-  <main class="app-main" role="main">
-    <div class="main-container">
-      <div class="stories-section">
-        <div id="itemsList" class="stories-list">
-          <!-- Stories will be dynamically inserted here -->
+    <!-- Main Content -->
+    <main class="app-main" role="main">
+      <div class="main-container">
+        <div class="stories-section">
+          <div id="itemsList" class="stories-list">
+            <!-- Stories will be dynamically inserted here -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal -->
+    <div
+      id="modal"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-hidden="true"
+    >
+      <div class="modal-backdrop"></div>
+      <div class="modal-container">
+        <div class="modal-header">
+          <button id="modalClose" class="modal-close" aria-label="Close modal">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div id="modalContent" class="modal-content">
+          <!-- Dynamic content -->
         </div>
       </div>
     </div>
-  </main>
 
-  <!-- Modal -->
-  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal-backdrop"></div>
-    <div class="modal-container">
-      <div class="modal-header">
-        <button id="modalClose" class="modal-close" aria-label="Close modal">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      </div>
-      <div id="modalContent" class="modal-content">
-        <!-- Dynamic content -->
-      </div>
-    </div>
-  </div>
+    <!-- Toast Container -->
+    <div
+      id="errorContainer"
+      class="toast-container"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
 
-  <!-- Toast Container -->
-  <div id="errorContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+    <!-- Back to Top -->
+    <button
+      id="backToTop"
+      class="back-to-top"
+      aria-label="Back to top"
+      title="Back to top"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <line x1="12" y1="19" x2="12" y2="5" />
+        <polyline points="5 12 12 5 19 12" />
+      </svg>
+    </button>
 
-  <!-- Back to Top -->
-  <button id="backToTop" class="back-to-top" aria-label="Back to top" title="Back to top">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <line x1="12" y1="19" x2="12" y2="5"/>
-      <polyline points="5 12 12 5 19 12"/>
-    </svg>
-  </button>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+    <script src="simple-api.js"></script>
+    <script src="simple-app.js"></script>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
-  <script src="simple-api.js"></script>
-  <script src="simple-app.js"></script>
-  
-  <!-- Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
-      });
-    }
-
-    // Back to top button
-    const backToTop = document.getElementById('backToTop');
-    
-    window.addEventListener('scroll', () => {
-      const currentScroll = window.pageYOffset;
-      
-      if (currentScroll > 400) {
-        backToTop.classList.add('visible');
-      } else {
-        backToTop.classList.remove('visible');
+    <!-- Service Worker Registration -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("sw.js").catch(() => {});
+        });
       }
-    });
 
-    backToTop.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  </script>
-</body>
+      // Back to top button
+      const backToTop = document.getElementById("backToTop");
+
+      window.addEventListener("scroll", () => {
+        const currentScroll = window.pageYOffset;
+
+        if (currentScroll > 400) {
+          backToTop.classList.add("visible");
+        } else {
+          backToTop.classList.remove("visible");
+        }
+      });
+
+      backToTop.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    </script>
+  </body>
 </html>
