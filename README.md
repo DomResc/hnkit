@@ -2,6 +2,8 @@
 
 A modern, fast, and professional Hacker News client built with vanilla JavaScript with the support of **opencode**. This project focuses on performance and clean architecture using native web technologies.
 
+[**Site**](https://domresc.github.io/hnkit)
+
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
