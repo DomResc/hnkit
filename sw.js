@@ -59,21 +59,42 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip cross-origin requests
-  if (url.origin !== location.origin) {
-    // For API requests, use network-first strategy
-    if (url.hostname === "hacker-news.firebaseio.com") {
-      event.respondWith(networkFirstStrategy(request));
-      return;
-    }
+  // For API requests, use stale-while-revalidate strategy
+  if (url.hostname === "hacker-news.firebaseio.com") {
+    event.respondWith(staleWhileRevalidateStrategy(request));
+    return;
+  }
 
-    // For other cross-origin, just fetch
+  // Skip other cross-origin requests
+  if (url.origin !== location.origin) {
     return;
   }
 
   // For same-origin requests, use cache-first strategy
   event.respondWith(cacheFirstStrategy(request));
 });
+
+/**
+ * Stale-while-revalidate strategy
+ * Return cached response immediately, then update cache from network
+ */
+async function staleWhileRevalidateStrategy(request) {
+  const cache = await caches.open(DYNAMIC_CACHE);
+  const cachedResponse = await cache.match(request);
+
+  const networkFetch = fetch(request)
+    .then(async (networkResponse) => {
+      if (networkResponse && networkResponse.status === 200) {
+        await cache.put(request, networkResponse.clone());
+      }
+      return networkResponse;
+    })
+    .catch((err) => {
+      console.warn("[SW] Network fetch failed for SWR:", err);
+    });
+
+  return cachedResponse || networkFetch;
+}
 
 /**
  * Cache-first strategy

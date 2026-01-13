@@ -43,6 +43,30 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin: 0;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+}
+
+.brand-title span {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.theme-select {
+  background-color: var(--color-surface-elevated);
+  padding: var(--space-sm) var(--space-lg) var(--space-sm) var(--space-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.theme-select:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text-primary);
 }
 
 .header-controls {
@@ -92,11 +116,42 @@
 }
 
 /* Selects */
-.feed-select {
+.feed-select,
+.theme-select {
   background-color: var(--color-surface-elevated);
-  padding: var(--space-sm) var(--space-lg) var(--space-sm) var(--space-md);
+  padding: 0 var(--space-lg) 0 var(--space-md);
   font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: pointer;
   min-width: 120px;
+  height: 38px;
+  line-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.feed-select:hover,
+.theme-select:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text-primary);
+}
+
+.search-box input {
+  width: 100%;
+  height: 38px;
+  padding-left: calc(var(--space-md) * 2 + 18px);
+  padding-right: calc(var(--space-md) * 2 + 32px);
+  background-color: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+}
+
+.feed-select:hover,
+.theme-select:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text-primary);
 }
 
 /* Icon Buttons */
@@ -612,11 +667,21 @@
   border-left-color: var(--color-primary);
 }
 
-.comment-level-1 { margin-left: var(--space-md); }
-.comment-level-2 { margin-left: calc(var(--space-md) * 2); }
-.comment-level-3 { margin-left: calc(var(--space-md) * 3); }
-.comment-level-4 { margin-left: calc(var(--space-md) * 4); }
-.comment-level-5 { margin-left: calc(var(--space-md) * 5); }
+.comment-level-1 {
+  margin-left: var(--space-md);
+}
+.comment-level-2 {
+  margin-left: calc(var(--space-md) * 2);
+}
+.comment-level-3 {
+  margin-left: calc(var(--space-md) * 3);
+}
+.comment-level-4 {
+  margin-left: calc(var(--space-md) * 4);
+}
+.comment-level-5 {
+  margin-left: calc(var(--space-md) * 5);
+}
 
 .comment-header {
   display: flex;

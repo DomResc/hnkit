@@ -108,13 +108,21 @@
 
 /* Shake */
 @keyframes shake {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: translateX(-4px);
   }
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     transform: translateX(4px);
   }
 }
@@ -125,7 +133,8 @@
 
 /* Pulse */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -157,7 +166,8 @@
     transform: scale(1);
     opacity: 1;
   }
-  75%, 100% {
+  75%,
+  100% {
     transform: scale(2);
     opacity: 0;
   }
@@ -169,7 +179,8 @@
 
 /* Wiggle */
 @keyframes wiggle {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(0deg);
   }
   25% {
@@ -186,7 +197,8 @@
 
 /* Float */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -198,25 +210,51 @@
   animation: float 3s ease-in-out infinite;
 }
 
-/* Shimmer */
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
+/* Skeleton Loader */
+.skeleton {
+  pointer-events: none;
+  overflow: hidden;
+  background-color: var(--color-surface-elevated);
+  position: relative;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.05) 20%,
+    rgba(255, 255, 255, 0.1) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer-effect 2s infinite;
+}
+
+[data-theme="light"] .skeleton::after {
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(0, 0, 0, 0.02) 20%,
+    rgba(0, 0, 0, 0.05) 60%,
+    rgba(255, 255, 255, 0)
+  );
+}
+
+@keyframes shimmer-effect {
   100% {
-    background-position: 1000px 0;
+    transform: translateX(100%);
   }
 }
 
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.05),
-    transparent
-  );
-  background-size: 1000px 100%;
-  animation: shimmer 2s infinite;
+.skeleton-box {
+  background-color: var(--color-border);
+  border-radius: var(--radius-sm);
 }
 
 /* Gradient Animation */
@@ -239,7 +277,9 @@
 
 /* Typing Indicator */
 @keyframes typing {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     transform: translateY(0);
   }
   30% {
@@ -272,14 +312,17 @@
 
 /* Glow */
 @keyframes glow {
-  0%, 100% {
-    box-shadow: 0 0 5px var(--color-primary),
-                0 0 10px var(--color-primary);
+  0%,
+  100% {
+    box-shadow:
+      0 0 5px var(--color-primary),
+      0 0 10px var(--color-primary);
   }
   50% {
-    box-shadow: 0 0 10px var(--color-primary),
-                0 0 20px var(--color-primary),
-                0 0 30px var(--color-primary);
+    box-shadow:
+      0 0 10px var(--color-primary),
+      0 0 20px var(--color-primary),
+      0 0 30px var(--color-primary);
   }
 }
 
@@ -302,7 +345,9 @@
 .animate-on-scroll {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
 }
 
 .animate-on-scroll.in-view {
@@ -312,7 +357,9 @@
 
 /* Hover Animations */
 .hover-lift {
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .hover-lift:hover {
@@ -338,22 +385,24 @@
 
 /* Loading Animations */
 .loading-dots::after {
-  content: '';
+  content: "";
   animation: loading-dots 1.5s infinite;
 }
 
 @keyframes loading-dots {
-  0%, 20% {
-    content: '';
+  0%,
+  20% {
+    content: "";
   }
   40% {
-    content: '.';
+    content: ".";
   }
   60% {
-    content: '..';
+    content: "..";
   }
-  80%, 100% {
-    content: '...';
+  80%,
+  100% {
+    content: "...";
   }
 }
 
@@ -362,13 +411,33 @@
   animation: slide-in var(--transition-base) ease-out backwards;
 }
 
-.stagger-animation > *:nth-child(1) { animation-delay: 50ms; }
-.stagger-animation > *:nth-child(2) { animation-delay: 100ms; }
-.stagger-animation > *:nth-child(3) { animation-delay: 150ms; }
-.stagger-animation > *:nth-child(4) { animation-delay: 200ms; }
-.stagger-animation > *:nth-child(5) { animation-delay: 250ms; }
-.stagger-animation > *:nth-child(6) { animation-delay: 300ms; }
-.stagger-animation > *:nth-child(7) { animation-delay: 350ms; }
-.stagger-animation > *:nth-child(8) { animation-delay: 400ms; }
-.stagger-animation > *:nth-child(9) { animation-delay: 450ms; }
-.stagger-animation > *:nth-child(10) { animation-delay: 500ms; }
+.stagger-animation > *:nth-child(1) {
+  animation-delay: 50ms;
+}
+.stagger-animation > *:nth-child(2) {
+  animation-delay: 100ms;
+}
+.stagger-animation > *:nth-child(3) {
+  animation-delay: 150ms;
+}
+.stagger-animation > *:nth-child(4) {
+  animation-delay: 200ms;
+}
+.stagger-animation > *:nth-child(5) {
+  animation-delay: 250ms;
+}
+.stagger-animation > *:nth-child(6) {
+  animation-delay: 300ms;
+}
+.stagger-animation > *:nth-child(7) {
+  animation-delay: 350ms;
+}
+.stagger-animation > *:nth-child(8) {
+  animation-delay: 400ms;
+}
+.stagger-animation > *:nth-child(9) {
+  animation-delay: 450ms;
+}
+.stagger-animation > *:nth-child(10) {
+  animation-delay: 500ms;
+}

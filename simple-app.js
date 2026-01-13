@@ -1,7 +1,7 @@
-(function() {
-  'use strict';
+(function () {
+  "use strict";
 
-  let currentFeed = 'topstories';
+  let currentFeed = "topstories";
   let feedIds = [];
   let allLoadedItems = [];
   let currentPage = 0;
@@ -12,19 +12,19 @@
 
   function init() {
     elements = {
-      feedSelect: document.getElementById('feedSelect'),
-      searchInput: document.getElementById('searchInput'),
-      itemsList: document.getElementById('itemsList'),
-      loadingIndicator: document.getElementById('loadingIndicator'),
-      themeToggle: document.getElementById('themeToggle'),
-      refreshBtn: document.getElementById('refreshBtn'),
-      modal: document.getElementById('modal'),
-      modalContent: document.getElementById('modalContent'),
-      modalClose: document.getElementById('modalClose')
+      feedSelect: document.getElementById("feedSelect"),
+      searchInput: document.getElementById("searchInput"),
+      itemsList: document.getElementById("itemsList"),
+      loadingIndicator: document.getElementById("loadingIndicator"),
+      themeSelect: document.getElementById("themeSelect"),
+      refreshBtn: document.getElementById("refreshBtn"),
+      modal: document.getElementById("modal"),
+      modalContent: document.getElementById("modalContent"),
+      modalClose: document.getElementById("modalClose"),
     };
 
     if (!elements.itemsList) {
-      console.error('Critical elements missing!');
+      console.error("Critical elements missing!");
       return;
     }
 
@@ -35,46 +35,58 @@
 
   function setupEventListeners() {
     if (elements.feedSelect) {
-      elements.feedSelect.addEventListener('change', (e) => {
+      elements.feedSelect.addEventListener("change", (e) => {
         currentFeed = e.target.value;
         resetAndLoad();
       });
     }
 
     if (elements.refreshBtn) {
-      elements.refreshBtn.addEventListener('click', resetAndLoad);
+      elements.refreshBtn.addEventListener("click", resetAndLoad);
     }
 
-    if (elements.themeToggle) {
-      elements.themeToggle.addEventListener('click', toggleTheme);
+    if (elements.themeSelect) {
+      elements.themeSelect.addEventListener("change", (e) => {
+        setTheme(e.target.value);
+      });
     }
 
     if (elements.searchInput) {
-      elements.searchInput.addEventListener('input', debounce(handleSearch, 500));
+      elements.searchInput.addEventListener(
+        "input",
+        debounce(handleSearch, 500),
+      );
     }
 
     if (elements.modalClose) {
-      elements.modalClose.addEventListener('click', closeModal);
+      elements.modalClose.addEventListener("click", closeModal);
     }
 
     if (elements.modal) {
-      elements.modal.addEventListener('click', (e) => {
-        if (e.target === elements.modal || e.target.classList.contains('modal-backdrop')) {
+      elements.modal.addEventListener("click", (e) => {
+        if (
+          e.target === elements.modal ||
+          e.target.classList.contains("modal-backdrop")
+        ) {
           closeModal();
         }
       });
     }
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && elements.modal && elements.modal.classList.contains('active')) {
+    document.addEventListener("keydown", (e) => {
+      if (
+        e.key === "Escape" &&
+        elements.modal &&
+        elements.modal.classList.contains("active")
+      ) {
         closeModal();
       }
     });
 
     if (elements.itemsList) {
-      elements.itemsList.addEventListener('click', (e) => {
-        const card = e.target.closest('.story-card');
-        if (card && !card.classList.contains('skeleton')) {
+      elements.itemsList.addEventListener("click", (e) => {
+        const card = e.target.closest(".story-card");
+        if (card && !card.classList.contains("skeleton")) {
           const storyId = card.dataset.storyId;
           if (storyId) {
             openComments(storyId);
@@ -83,7 +95,7 @@
       });
     }
 
-    window.addEventListener('scroll', debounce(handleScroll, 200));
+    window.addEventListener("scroll", debounce(handleScroll, 200));
   }
 
   async function loadFeed() {
@@ -91,12 +103,13 @@
       showLoading(true);
       feedIds = await window.hnAPI.fetchFeed(currentFeed);
       currentPage = 0;
-      elements.itemsList.innerHTML = '';
+      elements.itemsList.innerHTML = "";
       await loadMoreItems();
       showLoading(false);
     } catch (error) {
-      console.error('Failed to load feed:', error);
-      elements.itemsList.innerHTML = '<div class="error">Failed to load stories. Please try again.</div>';
+      console.error("Failed to load feed:", error);
+      elements.itemsList.innerHTML =
+        '<div class="error">Failed to load stories. Please try again.</div>';
       showLoading(false);
     }
   }
@@ -112,31 +125,40 @@
       elements.itemsList.appendChild(createSkeleton());
     });
 
-    const items = await window.hnAPI.fetchItems(idsToLoad);
-    
-    const skeletons = elements.itemsList.querySelectorAll('.skeleton');
-    skeletons.forEach(s => s.remove());
+    try {
+      const items = await window.hnAPI.fetchItems(idsToLoad);
 
-    items.forEach((item, idx) => {
-      if (item && !item.deleted) {
-        allLoadedItems.push(item);
-        const card = createStoryCard(item, start + idx + 1);
-        elements.itemsList.appendChild(card);
-      }
-    });
+      const skeletons = elements.itemsList.querySelectorAll(".skeleton");
+      skeletons.forEach((s) => s.remove());
+
+      items.forEach((item, idx) => {
+        if (item && !item.deleted) {
+          allLoadedItems.push(item);
+          const card = createStoryCard(item, start + idx + 1);
+          elements.itemsList.appendChild(card);
+        }
+      });
+    } catch (error) {
+      console.error("Failed to load more items:", error);
+      const skeletons = elements.itemsList.querySelectorAll(".skeleton");
+      skeletons.forEach((s) => s.remove());
+    }
 
     currentPage++;
   }
 
   function createStoryCard(item, rank) {
-    const card = document.createElement('article');
-    card.className = 'story-card';
+    const card = document.createElement("article");
+    card.className = "story-card";
     card.dataset.storyId = item.id;
-    card.dataset.url = item.url || `https://news.ycombinator.com/item?id=${item.id}`;
-    
-    const domain = item.url ? new URL(item.url).hostname.replace('www.', '') : 'news.ycombinator.com';
+    card.dataset.url =
+      item.url || `https://news.ycombinator.com/item?id=${item.id}`;
+
+    const domain = item.url
+      ? new URL(item.url).hostname.replace("www.", "")
+      : "news.ycombinator.com";
     const timeAgo = formatTimeAgo(item.time);
-    
+
     card.innerHTML = `
       <div class="story-header">
         <div class="story-rank">#${rank}</div>
@@ -146,13 +168,13 @@
         </div>
       </div>
       
-      <h2 class="story-title">${escapeHtml(item.title || 'Untitled')}</h2>
+      <h2 class="story-title">${escapeHtml(item.title || "Untitled")}</h2>
       
       <div class="story-footer">
         <div class="story-stats">
           <span class="stat-item stat-score">⭐ ${item.score || 0}</span>
           <span class="stat-item stat-comments">💬 ${item.descendants || 0} comments</span>
-          <span class="stat-item">👤 ${escapeHtml(item.by || 'unknown')}</span>
+          <span class="stat-item">👤 ${escapeHtml(item.by || "unknown")}</span>
         </div>
         <button class="quick-link-btn" title="Open link" onclick="event.stopPropagation(); window.open('${card.dataset.url}', '_blank')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -168,8 +190,8 @@
   }
 
   function createSkeleton() {
-    const skeleton = document.createElement('article');
-    skeleton.className = 'story-card skeleton';
+    const skeleton = document.createElement("article");
+    skeleton.className = "story-card skeleton";
     skeleton.innerHTML = `
       <div class="story-header">
         <div class="skeleton-box" style="width: 40px; height: 24px;"></div>
@@ -186,7 +208,7 @@
 
   function handleScroll() {
     if (isSearching) return;
-    
+
     const scrollTop = window.pageYOffset;
     const windowHeight = window.innerHeight;
     const docHeight = document.documentElement.scrollHeight;
@@ -201,22 +223,23 @@
 
     if (!query) {
       isSearching = false;
-      elements.itemsList.innerHTML = '';
+      elements.itemsList.innerHTML = "";
       currentPage = 0;
       await loadMoreItems();
       return;
     }
 
     isSearching = true;
-    
-    const filteredItems = allLoadedItems.filter(item => 
-      item.title && item.title.toLowerCase().includes(query)
+
+    const filteredItems = allLoadedItems.filter(
+      (item) => item.title && item.title.toLowerCase().includes(query),
     );
 
-    elements.itemsList.innerHTML = '';
-    
+    elements.itemsList.innerHTML = "";
+
     if (filteredItems.length === 0) {
-      elements.itemsList.innerHTML = '<div class="empty-state"><p>No stories found matching your search.</p></div>';
+      elements.itemsList.innerHTML =
+        '<div class="empty-state"><p>No stories found matching your search.</p></div>';
       return;
     }
 
@@ -231,42 +254,43 @@
     allLoadedItems = [];
     currentPage = 0;
     isSearching = false;
-    elements.itemsList.innerHTML = '';
+    elements.itemsList.innerHTML = "";
     if (elements.searchInput) {
-      elements.searchInput.value = '';
+      elements.searchInput.value = "";
     }
     loadFeed();
   }
 
   function showLoading(loading) {
     if (elements.loadingIndicator) {
-      elements.loadingIndicator.classList.toggle('active', loading);
+      elements.loadingIndicator.classList.toggle("active", loading);
     }
   }
 
   function applyTheme() {
-    const savedTheme = localStorage.getItem('hn_theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    const savedTheme = localStorage.getItem("hn_theme") || "dark";
+    setTheme(savedTheme);
+    if (elements.themeSelect) {
+      elements.themeSelect.value = savedTheme;
+    }
   }
 
-  function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme');
-    const newTheme = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('hn_theme', newTheme);
+  function setTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("hn_theme", theme);
   }
 
   function openModal(content) {
     if (!elements.modal || !elements.modalContent) return;
     elements.modalContent.innerHTML = content;
-    elements.modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    elements.modal.classList.add("active");
+    document.body.style.overflow = "hidden";
   }
 
   function closeModal() {
     if (!elements.modal) return;
-    elements.modal.classList.remove('active');
-    document.body.style.overflow = '';
+    elements.modal.classList.remove("active");
+    document.body.style.overflow = "";
     currentCommentIds = [];
     currentCommentPage = 0;
     isLoadingComments = false;
@@ -280,9 +304,9 @@
   async function openComments(storyId) {
     try {
       const story = await window.hnAPI.fetchItem(storyId);
-      
+
       if (!story) {
-        alert('Failed to load story');
+        alert("Failed to load story");
         return;
       }
 
@@ -291,16 +315,18 @@
 
       const modalHTML = `
         <div class="modal-story-header">
-          <h2 class="modal-story-title">${escapeHtml(story.title || 'Untitled')}</h2>
+          <h2 class="modal-story-title">${escapeHtml(story.title || "Untitled")}</h2>
           <div class="modal-story-meta">
-            <span class="meta-item">👤 ${escapeHtml(story.by || 'unknown')}</span>
+            <span class="meta-item">👤 ${escapeHtml(story.by || "unknown")}</span>
             <span class="meta-separator">•</span>
             <span class="meta-item">⏰ ${formatTimeAgo(story.time)}</span>
             <span class="meta-separator">•</span>
             <span class="meta-item">💬 ${story.descendants || 0} comments</span>
           </div>
           <div class="modal-story-actions">
-            ${story.url ? `
+            ${
+              story.url
+                ? `
               <a href="${story.url}" target="_blank" rel="noopener" class="modal-link-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -309,7 +335,9 @@
                 </svg>
                 Open Link
               </a>
-            ` : ''}
+            `
+                : ""
+            }
             <a href="https://news.ycombinator.com/item?id=${story.id}" 
                target="_blank" 
                rel="noopener" 
@@ -323,16 +351,21 @@
           </div>
         </div>
 
-        ${story.text ? `
+        ${
+          story.text
+            ? `
           <div class="story-text">
             ${story.text}
           </div>
-        ` : ''}
+        `
+            : ""
+        }
         
         <div class="comments-container" id="commentsContainer">
-          ${currentCommentIds.length > 0 ? 
-            '<div class="loading-comments">Loading comments...</div>' : 
-            '<div class="no-comments">No comments yet</div>'
+          ${
+            currentCommentIds.length > 0
+              ? '<div class="loading-comments">Loading comments...</div>'
+              : '<div class="no-comments">No comments yet</div>'
           }
         </div>
       `;
@@ -340,14 +373,14 @@
       openModal(modalHTML);
 
       if (currentCommentIds.length > 0) {
-        const container = document.getElementById('commentsContainer');
-        container.innerHTML = '';
+        const container = document.getElementById("commentsContainer");
+        container.innerHTML = "";
         await loadMoreComments();
         setupModalScroll();
       }
     } catch (error) {
-      console.error('Failed to load comments:', error);
-      alert('Failed to load comments');
+      console.error("Failed to load comments:", error);
+      alert("Failed to load comments");
     }
   }
 
@@ -360,12 +393,15 @@
       const scrollHeight = modalContent.scrollHeight;
       const clientHeight = modalContent.clientHeight;
 
-      if (scrollTop + clientHeight >= scrollHeight - 200 && !isLoadingComments) {
+      if (
+        scrollTop + clientHeight >= scrollHeight - 200 &&
+        !isLoadingComments
+      ) {
         await loadMoreComments();
       }
     }, 200);
 
-    modalContent.addEventListener('scroll', handleModalScroll);
+    modalContent.addEventListener("scroll", handleModalScroll);
   }
 
   async function loadMoreComments() {
@@ -378,19 +414,19 @@
     if (idsToLoad.length === 0) return;
 
     isLoadingComments = true;
-    const container = document.getElementById('commentsContainer');
-    
+    const container = document.getElementById("commentsContainer");
+
     if (container) {
-      const loadingDiv = document.createElement('div');
-      loadingDiv.className = 'loading-comments';
-      loadingDiv.textContent = 'Loading more comments...';
+      const loadingDiv = document.createElement("div");
+      loadingDiv.className = "loading-comments";
+      loadingDiv.textContent = "Loading more comments...";
       container.appendChild(loadingDiv);
 
       const comments = await window.hnAPI.fetchItems(idsToLoad);
-      
+
       loadingDiv.remove();
 
-      comments.forEach(comment => {
+      comments.forEach((comment) => {
         if (comment && !comment.deleted) {
           const commentEl = createCommentElement(comment);
           container.appendChild(commentEl);
@@ -404,54 +440,60 @@
   }
 
   function createCommentElement(comment, level = 0) {
-    const article = document.createElement('article');
+    const article = document.createElement("article");
     article.className = `comment comment-level-${Math.min(level, 5)}`;
     article.style.marginLeft = `${level * 20}px`;
-    
+
     const hasReplies = comment.kids && comment.kids.length > 0;
-    
+
     article.innerHTML = `
       <div class="comment-header">
-        <div class="comment-author">👤 ${escapeHtml(comment.by || 'unknown')}</div>
+        <div class="comment-author">👤 ${escapeHtml(comment.by || "unknown")}</div>
         <div class="comment-time">${formatTimeAgo(comment.time)}</div>
       </div>
       
       <div class="comment-body">
-        ${comment.text || '<i>Comment deleted</i>'}
+        ${comment.text || "<i>Comment deleted</i>"}
       </div>
       
-      ${hasReplies ? `
+      ${
+        hasReplies
+          ? `
         <button class="comment-replies-toggle" data-comment-id="${comment.id}">
-          ▶ Show ${comment.kids.length} ${comment.kids.length === 1 ? 'reply' : 'replies'}
+          ▶ Show ${comment.kids.length} ${comment.kids.length === 1 ? "reply" : "replies"}
         </button>
         <div class="comment-children" data-comment-id="${comment.id}" style="display:none;"></div>
-      ` : ''}
+      `
+          : ""
+      }
     `;
 
     if (hasReplies) {
-      const toggle = article.querySelector('.comment-replies-toggle');
-      const childrenContainer = article.querySelector('.comment-children');
-      
-      toggle.addEventListener('click', async () => {
-        if (childrenContainer.style.display === 'none') {
+      const toggle = article.querySelector(".comment-replies-toggle");
+      const childrenContainer = article.querySelector(".comment-children");
+
+      toggle.addEventListener("click", async () => {
+        if (childrenContainer.style.display === "none") {
           toggle.disabled = true;
-          toggle.textContent = 'Loading...';
-          
+          toggle.textContent = "Loading...";
+
           if (childrenContainer.children.length === 0) {
             const replies = await window.hnAPI.fetchItems(comment.kids);
-            replies.forEach(reply => {
+            replies.forEach((reply) => {
               if (reply && !reply.deleted) {
-                childrenContainer.appendChild(createCommentElement(reply, level + 1));
+                childrenContainer.appendChild(
+                  createCommentElement(reply, level + 1),
+                );
               }
             });
           }
-          
-          childrenContainer.style.display = '';
+
+          childrenContainer.style.display = "";
           toggle.textContent = `▼ Hide replies`;
           toggle.disabled = false;
         } else {
-          childrenContainer.style.display = 'none';
-          toggle.textContent = `▶ Show ${comment.kids.length} ${comment.kids.length === 1 ? 'reply' : 'replies'}`;
+          childrenContainer.style.display = "none";
+          toggle.textContent = `▶ Show ${comment.kids.length} ${comment.kids.length === 1 ? "reply" : "replies"}`;
         }
       });
     }
@@ -472,12 +514,12 @@
   }
 
   function formatTimeAgo(timestamp) {
-    if (!timestamp) return 'unknown';
-    
+    if (!timestamp) return "unknown";
+
     const now = Date.now();
     const diff = Math.floor((now - timestamp * 1000) / 1000);
-    
-    if (diff < 60) return 'just now';
+
+    if (diff < 60) return "just now";
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
     if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
     if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
@@ -485,32 +527,47 @@
   }
 
   function escapeHtml(str) {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.textContent = str;
     return div.innerHTML;
   }
 
-  document.addEventListener('keydown', (e) => {
-    if (e.target.matches('input, textarea')) return;
+  document.addEventListener("keydown", (e) => {
+    if (e.target.matches("input, textarea")) return;
 
-    switch(e.key.toLowerCase()) {
-      case 'r':
+    switch (e.key.toLowerCase()) {
+      case "r":
         e.preventDefault();
         resetAndLoad();
         break;
-      case '/':
+      case "/":
         e.preventDefault();
         if (elements.searchInput) {
           elements.searchInput.focus();
         }
         break;
+      case "t":
+        e.preventDefault();
+        cycleTheme();
+        break;
     }
   });
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+  function cycleTheme() {
+    const themes = ["dark", "light", "oled", "nord", "hacker"];
+    const current =
+      document.documentElement.getAttribute("data-theme") || "dark";
+    const nextIndex = (themes.indexOf(current) + 1) % themes.length;
+    const nextTheme = themes[nextIndex];
+    setTheme(nextTheme);
+    if (elements.themeSelect) {
+      elements.themeSelect.value = nextTheme;
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
   }
-
 })();
