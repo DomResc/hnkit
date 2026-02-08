@@ -1,8 +1,7 @@
 (function () {
   "use strict";
 
-  let currentFeed = "topstories";
-  let feedIds = [];
+  let feedIds = []; // Array of {id, source} objects
   let allLoadedItems = [];
   let currentPage = 0;
   const itemsPerPage = 20;
@@ -34,13 +33,6 @@
   }
 
   function setupEventListeners() {
-    if (elements.feedSelect) {
-      elements.feedSelect.addEventListener("change", (e) => {
-        currentFeed = e.target.value;
-        resetAndLoad();
-      });
-    }
-
     if (elements.refreshBtn) {
       elements.refreshBtn.addEventListener("click", resetAndLoad);
     }
@@ -87,9 +79,21 @@
       elements.itemsList.addEventListener("click", (e) => {
         const card = e.target.closest(".story-card");
         if (card && !card.classList.contains("skeleton")) {
-          const storyId = card.dataset.storyId;
-          if (storyId) {
-            openComments(storyId);
+          // Handle comments link click
+          const commentsLink = e.target.closest(".stat-comments-link");
+          if (commentsLink) {
+            e.stopPropagation();
+            const storyId = commentsLink.dataset.storyId;
+            const source = commentsLink.dataset.source;
+            const url = commentsLink.dataset.url;
+            window.app.openComments(storyId, source, url);
+            return;
+          }
+
+          // Open URL on card click
+          const url = card.dataset.url;
+          if (url) {
+            window.open(url, "_blank");
           }
         }
       });
@@ -101,7 +105,7 @@
   async function loadFeed() {
     try {
       showLoading(true);
-      feedIds = await window.hnAPI.fetchFeed(currentFeed);
+      feedIds = await window.hnAPI.fetchUnifiedFeed();
       currentPage = 0;
       elements.itemsList.innerHTML = "";
       await loadMoreItems();
@@ -117,24 +121,28 @@
   async function loadMoreItems() {
     const start = currentPage * itemsPerPage;
     const end = start + itemsPerPage;
-    const idsToLoad = feedIds.slice(start, end);
+    const itemsToLoad = feedIds.slice(start, end);
 
-    if (idsToLoad.length === 0) return;
+    if (itemsToLoad.length === 0) return;
 
-    idsToLoad.forEach(() => {
+    itemsToLoad.forEach(() => {
       elements.itemsList.appendChild(createSkeleton());
     });
 
     try {
-      const items = await window.hnAPI.fetchItems(idsToLoad);
+      const items = await window.hnAPI.fetchItems(itemsToLoad);
 
       const skeletons = elements.itemsList.querySelectorAll(".skeleton");
       skeletons.forEach((s) => s.remove());
 
       items.forEach((item, idx) => {
+        const sourceItem = itemsToLoad[idx];
         if (item && !item.deleted) {
-          allLoadedItems.push(item);
-          const card = createStoryCard(item, start + idx + 1);
+          allLoadedItems.push({ ...item, source: sourceItem.source });
+          const card = createStoryCard(
+            { ...item, source: sourceItem.source },
+            start + idx + 1,
+          );
           elements.itemsList.appendChild(card);
         }
       });
@@ -151,19 +159,44 @@
     const card = document.createElement("article");
     card.className = "story-card";
     card.dataset.storyId = item.id;
-    card.dataset.url =
-      item.url || `https://news.ycombinator.com/item?id=${item.id}`;
+    card.dataset.source = item.source || "hn";
 
-    const domain = item.url
-      ? new URL(item.url).hostname.replace("www.", "")
-      : "news.ycombinator.com";
-    const timeAgo = formatTimeAgo(item.time);
+    const isDevTo = item.source === "devto";
+    const url = isDevTo
+      ? item.url
+      : item.url || `https://news.ycombinator.com/item?id=${item.id}`;
+    card.dataset.url = url;
+
+    let domain = "unknown";
+    try {
+      if (item.url) {
+        domain = new URL(item.url).hostname.replace("www.", "");
+      } else {
+        domain = isDevTo ? "dev.to" : "news.ycombinator.com";
+      }
+    } catch (e) {
+      domain = isDevTo ? "dev.to" : "news.ycombinator.com";
+    }
+
+    const timeAgo = formatTimeAgo(isDevTo ? item.published_at : item.time);
+    const score = isDevTo
+      ? item.positive_reactions_count || 0
+      : item.score || 0;
+    const comments = isDevTo ? item.comments_count || 0 : item.descendants || 0;
+    const author = isDevTo
+      ? item.user?.name || item.user?.username || "unknown"
+      : item.by || "unknown";
+    const authorUsername = isDevTo ? item.user?.username : item.by;
+
+    // Source badge - identifiable design
+    const sourceBadge = isDevTo ? "DEV" : "HN";
 
     card.innerHTML = `
       <div class="story-header">
         <div class="story-rank">#${rank}</div>
         <div class="story-meta">
           <div class="story-domain">${escapeHtml(domain)}</div>
+          <div class="story-source-badge" title="${isDevTo ? "Dev.to" : "HackerNews"}">${sourceBadge}</div>
           <div class="story-time">${timeAgo}</div>
         </div>
       </div>
@@ -172,17 +205,10 @@
       
       <div class="story-footer">
         <div class="story-stats">
-          <span class="stat-item stat-score">⭐ ${item.score || 0}</span>
-          <span class="stat-item stat-comments">💬 ${item.descendants || 0} comments</span>
-          <span class="stat-item user-link" onclick="event.stopPropagation(); window.app.openUser('${escapeHtml(item.by)}')">👤 ${escapeHtml(item.by || "unknown")}</span>
+          <span class="stat-item stat-score">⭐ ${score}</span>
+          <span class="stat-item stat-comments-link" data-story-id="${card.dataset.storyId}" data-source="${item.source}" data-url="${url}">💬 ${comments}</span>
+          <span class="stat-item">👤 ${escapeHtml(author)}</span>
         </div>
-        <button class="quick-link-btn" title="Open link" onclick="event.stopPropagation(); window.open('${card.dataset.url}', '_blank')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-            <polyline points="15 3 21 3 21 9"/>
-            <line x1="10" y1="14" x2="21" y2="3"/>
-          </svg>
-        </button>
       </div>
     `;
 
@@ -301,86 +327,16 @@
   const commentsPerPage = 10;
   let isLoadingComments = false;
 
-  async function openComments(storyId) {
-    try {
-      const story = await window.hnAPI.fetchItem(storyId);
-
-      if (!story) {
-        alert("Failed to load story");
-        return;
+  function openComments(storyId, source = "hn", articleUrl = "") {
+    // Open the platform's comments page directly
+    if (source === "devto") {
+      // For Dev.to, open the article itself (comments are displayed there)
+      if (articleUrl) {
+        window.open(articleUrl, "_blank");
       }
-
-      currentCommentIds = story.kids || [];
-      currentCommentPage = 0;
-
-      const modalHTML = `
-        <div class="modal-story-header">
-          <h2 class="modal-story-title">${escapeHtml(story.title || "Untitled")}</h2>
-          <div class="modal-story-meta">
-            <span class="meta-item">👤 ${escapeHtml(story.by || "unknown")}</span>
-            <span class="meta-separator">•</span>
-            <span class="meta-item">⏰ ${formatTimeAgo(story.time)}</span>
-            <span class="meta-separator">•</span>
-            <span class="meta-item">💬 ${story.descendants || 0} comments</span>
-          </div>
-          <div class="modal-story-actions">
-            ${
-              story.url
-                ? `
-              <a href="${story.url}" target="_blank" rel="noopener" class="modal-link-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                  <polyline points="15 3 21 3 21 9"/>
-                  <line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
-                Open Link
-              </a>
-            `
-                : ""
-            }
-            <a href="https://news.ycombinator.com/item?id=${story.id}" 
-               target="_blank" 
-               rel="noopener" 
-               class="modal-link-btn modal-hn-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-              </svg>
-              View on HN
-            </a>
-          </div>
-        </div>
-
-        ${
-          story.text
-            ? `
-          <div class="story-text">
-            ${story.text}
-          </div>
-        `
-            : ""
-        }
-        
-        <div class="comments-container" id="commentsContainer">
-          ${
-            currentCommentIds.length > 0
-              ? '<div class="loading-comments">Loading comments...</div>'
-              : '<div class="no-comments">No comments yet</div>'
-          }
-        </div>
-      `;
-
-      openModal(modalHTML);
-
-      if (currentCommentIds.length > 0) {
-        const container = document.getElementById("commentsContainer");
-        container.innerHTML = "";
-        await loadMoreComments();
-        setupModalScroll();
-      }
-    } catch (error) {
-      console.error("Failed to load comments:", error);
-      alert("Failed to load comments");
+    } else {
+      // For HN, open the item page which shows comments
+      window.open(`https://news.ycombinator.com/item?id=${storyId}`, "_blank");
     }
   }
 
@@ -448,7 +404,7 @@
 
     article.innerHTML = `
       <div class="comment-header">
-        <div class="comment-author user-link" onclick="window.app.openUser('${escapeHtml(comment.by)}')">👤 ${escapeHtml(comment.by || "unknown")}</div>
+        <div class="comment-author">👤 ${escapeHtml(comment.by || "unknown")}</div>
         <div class="comment-time">${formatTimeAgo(comment.time)}</div>
       </div>
       
@@ -501,45 +457,82 @@
     return article;
   }
 
-  async function openUser(username) {
+  async function openUser(username, source = "hn") {
     if (!username || username === "unknown") return;
 
     try {
       openModal('<div class="loading-comments">Loading user profile...</div>');
 
-      const user = await window.hnAPI.fetchUser(username);
+      const user = await window.hnAPI.fetchUser(username, source);
       if (!user) {
         openModal('<div class="error">Failed to load user profile.</div>');
         return;
       }
 
+      const isDevToUser = source === "devto";
+      const userName = isDevToUser ? user.username || user.name : user.id;
+      const joinDate = isDevToUser ? user.joined_at : user.created;
+
       const modalHTML = `
         <div class="user-profile">
           <div class="user-profile-header">
-            <div class="user-profile-avatar">👤</div>
-            <h2 class="user-profile-name">${escapeHtml(user.id)}</h2>
+            <div class="user-profile-avatar">${isDevToUser && user.profile_image ? `<img src="${user.profile_image}" alt="${userName}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;">` : "👤"}</div>
+            <h2 class="user-profile-name">${escapeHtml(userName)}</h2>
           </div>
           <div class="user-profile-stats">
+            ${
+              isDevToUser
+                ? `
+            <div class="user-stat">
+              <span class="user-stat-label">Type</span>
+              <span class="user-stat-value">${user.name ? "Creator" : "User"}</span>
+            </div>
+            `
+                : `
             <div class="user-stat">
               <span class="user-stat-label">Karma</span>
               <span class="user-stat-value">${user.karma || 0}</span>
             </div>
+            `
+            }
             <div class="user-stat">
               <span class="user-stat-label">Joined</span>
-              <span class="user-stat-value">${formatDate(user.created)}</span>
+              <span class="user-stat-value">${formatDate(joinDate)}</span>
             </div>
           </div>
           ${
-            user.about
+            isDevToUser && user.summary
               ? `
+            <div class="user-profile-about">
+              <h3>Summary</h3>
+              <div class="about-content">${escapeHtml(user.summary)}</div>
+            </div>
+          `
+              : !isDevToUser && user.about
+                ? `
             <div class="user-profile-about">
               <h3>About</h3>
               <div class="about-content">${user.about}</div>
             </div>
           `
-              : ""
+                : ""
           }
           <div class="user-profile-actions">
+            ${
+              isDevToUser
+                ? `
+            <a href="https://dev.to/${user.username}" 
+               target="_blank" 
+               rel="noopener" 
+               class="modal-link-btn modal-hn-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              View on Dev.to
+            </a>
+            `
+                : `
             <a href="https://news.ycombinator.com/user?id=${user.id}" 
                target="_blank" 
                rel="noopener" 
@@ -550,6 +543,8 @@
               </svg>
               View on HN
             </a>
+            `
+            }
           </div>
         </div>
       `;
@@ -587,7 +582,12 @@
     if (!timestamp) return "unknown";
 
     const now = Date.now();
-    const diff = Math.floor((now - timestamp * 1000) / 1000);
+    // Handle both Unix timestamps (HN) and ISO strings (Dev.to)
+    const timestampMs =
+      typeof timestamp === "number"
+        ? timestamp * 1000
+        : new Date(timestamp).getTime();
+    const diff = Math.floor((now - timestampMs) / 1000);
 
     if (diff < 60) return "just now";
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
@@ -624,15 +624,7 @@
   });
 
   function cycleTheme() {
-    const themes = [
-      "dark",
-      "light",
-      "oled",
-      "nord",
-      "hacker",
-      "sepia",
-      "high-contrast",
-    ];
+    const themes = ["dark", "light", "oled"];
     const current =
       document.documentElement.getAttribute("data-theme") || "dark";
     const nextIndex = (themes.indexOf(current) + 1) % themes.length;
@@ -646,6 +638,7 @@
   // Export some functions for global use
   window.app = {
     openUser,
+    openComments,
   };
 
   if (document.readyState === "loading") {

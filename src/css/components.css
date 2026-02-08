@@ -20,11 +20,7 @@
   background-color: rgba(255, 255, 255, 0.95);
 }
 
-[data-theme="oled"] .app-header,
-[data-theme="nord"] .app-header,
-[data-theme="hacker"] .app-header,
-[data-theme="sepia"] .app-header,
-[data-theme="high-contrast"] .app-header {
+[data-theme="oled"] .app-header {
   background-color: var(--color-surface);
   backdrop-filter: none;
 }
@@ -308,6 +304,31 @@
   font-weight: var(--font-weight-medium);
 }
 
+.story-source-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.375rem;
+  border-radius: 3px;
+  background-color: var(--color-surface-elevated);
+  color: var(--color-primary);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  opacity: 0.8;
+  transition:
+    opacity 200ms ease,
+    background-color 200ms ease;
+  border: 1px solid var(--color-primary);
+}
+
+.story-card:hover .story-source-badge {
+  opacity: 1;
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
 .story-time {
   color: var(--color-text-tertiary);
 }
@@ -365,6 +386,18 @@
 .stat-score {
   color: var(--color-primary);
   font-weight: var(--font-weight-semibold);
+}
+
+.stat-comments-link {
+  cursor: pointer;
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+}
+
+.stat-comments-link:hover {
+  background-color: var(--color-surface-hover);
+  transform: scale(1.05);
 }
 
 .user-link {
