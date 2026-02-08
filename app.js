@@ -1,8 +1,7 @@
 const feed = document.getElementById("feed");
 const feedStatus = document.getElementById("feedStatus");
 const scrollSentinel = document.getElementById("scrollSentinel");
-const refreshBtn = document.getElementById("refreshBtn");
-const clearCacheBtn = document.getElementById("clearCacheBtn");
+const themeCycleBtn = document.getElementById("themeCycleBtn");
 const themeButtons = Array.from(document.querySelectorAll(".theme-btn"));
 const cardTemplate = document.getElementById("cardTemplate");
 
@@ -21,7 +20,7 @@ const state = {
 };
 
 const formatPoints = (points) => `${points ?? 0} pts`;
-const formatComments = (count) => `${count ?? 0} commenti`;
+const formatComments = (count) => `${count ?? 0} comments`;
 const formatReadingTime = (minutes) => `${minutes ?? 1} min`;
 
 const computeTrendScore = (item, now) => {
@@ -95,7 +94,7 @@ const loadHackerNewsBatch = async () => {
       return {
         source: "HN",
         title: item.title,
-        subtitle: item.by ? `di ${item.by}` : "",
+        subtitle: item.by ? `by ${item.by}` : "",
         meta: `${formatPoints(item.score)} - ${formatComments(item.descendants)}`,
         url: item.url || `https://news.ycombinator.com/item?id=${id}`,
         time: item.time ? item.time * 1000 : Date.now(),
@@ -112,8 +111,8 @@ const loadDevtoBatch = async () => {
   return articles.map((article) => ({
     source: "DEV",
     title: article.title,
-    subtitle: article.user?.name ? `di ${article.user.name}` : "",
-    meta: `${formatReadingTime(article.reading_time_minutes)} - ${article.public_reactions_count ?? 0} reazioni`,
+    subtitle: article.user?.name ? `by ${article.user.name}` : "",
+    meta: `${formatReadingTime(article.reading_time_minutes)} - ${article.public_reactions_count ?? 0} reactions`,
     url: article.url,
     time: article.published_timestamp
       ? Date.parse(article.published_timestamp)
@@ -129,14 +128,14 @@ const loadNextPage = async () => {
     return;
   }
   state.isLoading = true;
-  setStatus("Aggiornamento...");
+  setStatus("Updating...");
   try {
     const [hnItems, devtoItems] = await Promise.all([
       loadHackerNewsBatch(),
       loadDevtoBatch(),
     ]);
     if (hnItems.length === 0 && devtoItems.length === 0) {
-      setStatus("Fine del feed");
+      setStatus("End of feed");
       observer.disconnect();
       return;
     }
@@ -149,9 +148,9 @@ const loadNextPage = async () => {
       .sort((a, b) => b.trendScore - a.trendScore || b.time - a.time);
     state.items = state.items.concat(merged);
     renderFeed(merged, { append: true });
-    setStatus("Aggiornato ora");
+    setStatus("Updated just now");
   } catch (error) {
-    setStatus("Errore di rete");
+    setStatus("Network error");
   } finally {
     state.isLoading = false;
   }
@@ -163,6 +162,10 @@ const setTheme = (theme) => {
     btn.classList.toggle("active", btn.dataset.theme === theme);
   });
   localStorage.setItem(THEME_KEY, theme);
+  if (themeCycleBtn) {
+    const label = theme === "dark" ? "Dark" : theme === "light" ? "Light" : "OLED";
+    themeCycleBtn.textContent = label;
+  }
 };
 
 const initTheme = () => {
@@ -170,38 +173,17 @@ const initTheme = () => {
   setTheme(saved || "dark");
 };
 
-const resetFeed = () => {
-  state.hnIds = [];
-  state.hnCursor = 0;
-  state.devtoPage = 1;
-  state.items = [];
-  clearFeed(feed);
-};
-
-refreshBtn.addEventListener("click", () => {
-  resetFeed();
-  loadNextPage();
-});
-
 themeButtons.forEach((btn) => {
   btn.addEventListener("click", () => setTheme(btn.dataset.theme));
 });
 
-const clearCaches = async () => {
-  if ("caches" in window) {
-    const keys = await caches.keys();
-    await Promise.all(keys.map((key) => caches.delete(key)));
-  }
-  const registration = await navigator.serviceWorker?.getRegistration();
-  if (registration?.active) {
-    registration.active.postMessage({ type: "CLEAR_CACHES" });
-  }
-  window.location.reload();
-};
-
-if (clearCacheBtn) {
-  clearCacheBtn.addEventListener("click", () => {
-    clearCaches();
+if (themeCycleBtn) {
+  const order = ["dark", "light", "oled"];
+  themeCycleBtn.addEventListener("click", () => {
+    const current = document.documentElement.dataset.theme || "dark";
+    const index = order.indexOf(current);
+    const next = order[(index + 1) % order.length];
+    setTheme(next);
   });
 }
 
@@ -222,17 +204,4 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js");
   });
-}
-
-if ("serviceWorker" in navigator && clearCacheBtn) {
-  if (navigator.serviceWorker.controller) {
-    clearCacheBtn.hidden = false;
-  }
-  navigator.serviceWorker.ready
-    .then(() => {
-      clearCacheBtn.hidden = false;
-    })
-    .catch(() => {
-      clearCacheBtn.hidden = true;
-    });
 }

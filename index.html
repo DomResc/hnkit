@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="it" data-theme="dark">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>HNKit</title>
     <meta
       name="description"
-      content="Client elegante per Hacker News e DEV.to"
+      content="Elegant client for Hacker News and DEV.to"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -35,16 +35,15 @@
         </div>
       </div>
       <div class="controls">
-        <button class="pill" id="refreshBtn" type="button">Aggiorna</button>
-        <button class="pill ghost" id="clearCacheBtn" type="button" hidden>
-          Svuota cache
+        <button class="pill theme-cycle" id="themeCycleBtn" type="button">
+          Dark
         </button>
-        <div class="theme-toggle" role="group" aria-label="Selezione tema">
+        <div class="theme-toggle" role="group" aria-label="Theme selection">
           <button class="theme-btn" data-theme="dark" type="button">
-            Scuro
+            Dark
           </button>
           <button class="theme-btn" data-theme="light" type="button">
-            Chiaro
+            Light
           </button>
           <button class="theme-btn" data-theme="oled" type="button">
             OLED
@@ -59,7 +58,7 @@
           <div>
             <p class="eyebrow">Hacker News + DEV.to</p>
           </div>
-          <span class="meta" id="feedStatus">Caricamento...</span>
+          <span class="meta" id="feedStatus">Loading...</span>
         </div>
         <div class="feed" id="feed" aria-live="polite"></div>
         <div class="sentinel" id="scrollSentinel" aria-hidden="true"></div>
@@ -67,7 +66,7 @@
     </main>
 
     <footer class="footer">
-      <p>Fatto per letture senza attrito. Dati da Hacker News e DEV.to.</p>
+      <p>Made for frictionless reading. Data from Hacker News and DEV.to.</p>
     </footer>
 
     <template id="cardTemplate">

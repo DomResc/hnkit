@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const CACHE_NAME = `hnkit-static-${CACHE_VERSION}`;
 const API_CACHE = `hnkit-api-${CACHE_VERSION}`;
 const STATIC_ASSETS = [
@@ -20,13 +20,15 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => ![CACHE_NAME, API_CACHE].includes(key))
-          .map((key) => caches.delete(key)),
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => ![CACHE_NAME, API_CACHE].includes(key))
+            .map((key) => caches.delete(key)),
+        ),
       ),
-    ),
   );
   self.clients.claim();
 });
@@ -34,9 +36,9 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("message", (event) => {
   if (event.data?.type === "CLEAR_CACHES") {
     event.waitUntil(
-      caches.keys().then((keys) =>
-        Promise.all(keys.map((key) => caches.delete(key))),
-      ),
+      caches
+        .keys()
+        .then((keys) => Promise.all(keys.map((key) => caches.delete(key)))),
     );
   }
 });
@@ -77,13 +79,14 @@ self.addEventListener("fetch", (event) => {
 
   if (isSameOrigin) {
     event.respondWith(
-      caches.match(request).then((cached) =>
-        cached ||
-        fetch(request).then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-          return response;
-        }),
+      caches.match(request).then(
+        (cached) =>
+          cached ||
+          fetch(request).then((response) => {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+            return response;
+          }),
       ),
     );
     return;

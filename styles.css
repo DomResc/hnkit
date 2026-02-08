@@ -176,6 +176,11 @@ h1 {
   gap: 14px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  margin-left: auto;
+}
+
+.theme-cycle {
+  display: none;
 }
 
 .pill {
@@ -191,10 +196,6 @@ h1 {
     transform var(--transition),
     box-shadow var(--transition),
     border var(--transition);
-}
-
-.pill.ghost {
-  background: transparent;
 }
 
 .pill:hover {
@@ -365,13 +366,12 @@ h2 {
 
 @media (max-width: 900px) {
   .topbar {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 16px;
   }
 
   .controls {
-    width: 100%;
-    justify-content: space-between;
+    justify-content: flex-end;
   }
 }
 
@@ -380,13 +380,15 @@ h2 {
     padding: 16px;
   }
 
-  .controls {
-    flex-direction: column;
-    align-items: stretch;
+  .theme-btn {
+    padding: 8px 12px;
   }
 
   .theme-toggle {
-    width: 100%;
-    justify-content: space-between;
+    display: none;
+  }
+
+  .theme-cycle {
+    display: inline-flex;
   }
 }
