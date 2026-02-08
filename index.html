@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="it" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HNKit</title>
+    <meta
+      name="description"
+      content="Client elegante per Hacker News e DEV.to"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient">
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+      <div class="grid"></div>
+    </div>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">HN</div>
+        <div>
+          <p class="eyebrow">HNKit</p>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="pill" id="refreshBtn" type="button">Aggiorna</button>
+        <div class="theme-toggle" role="group" aria-label="Selezione tema">
+          <button class="theme-btn" data-theme="dark" type="button">
+            Scuro
+          </button>
+          <button class="theme-btn" data-theme="light" type="button">
+            Chiaro
+          </button>
+          <button class="theme-btn" data-theme="oled" type="button">
+            OLED
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel" aria-labelledby="feedTitle">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Hacker News + DEV.to</p>
+          </div>
+          <span class="meta" id="feedStatus">Caricamento...</span>
+        </div>
+        <div class="feed" id="feed" aria-live="polite"></div>
+        <div class="sentinel" id="scrollSentinel" aria-hidden="true"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Fatto per letture senza attrito. Dati da Hacker News e DEV.to.</p>
+    </footer>
+
+    <template id="cardTemplate">
+      <a class="card">
+        <div class="card-body">
+          <p class="card-source"></p>
+          <h3 class="card-title"></h3>
+          <p class="card-subtitle"></p>
+        </div>
+        <div class="card-meta">
+          <span class="pill soft"></span>
+        </div>
+      </a>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
