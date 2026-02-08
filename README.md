@@ -9,6 +9,8 @@ Live site: https://domresc.github.io/hnkit
 - Unified feed combining Hacker News and DEV.to
 - Trend-based ranking that balances freshness and engagement
 - Infinite scroll with graceful loading states
+- PWA support with offline shell and API caching
+- Manual cache clearing from the UI
 - Three themes: dark (default), light, and OLED
 - Responsive layout with polished cards and micro-interactions
 
@@ -30,7 +32,8 @@ Open index.html with a static server (recommended) so fetch requests work correc
 ## Notes
 
 - DEV.to has rate limits; if the feed looks empty, wait a moment and refresh.
-- Data is fetched live on every session.
+- Data is fetched live on every session and cached for offline use.
+- Cache versions are controlled in sw.js; bump CACHE_VERSION to force refresh.
 
 ## License
 

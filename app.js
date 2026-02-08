@@ -2,6 +2,7 @@ const feed = document.getElementById("feed");
 const feedStatus = document.getElementById("feedStatus");
 const scrollSentinel = document.getElementById("scrollSentinel");
 const refreshBtn = document.getElementById("refreshBtn");
+const clearCacheBtn = document.getElementById("clearCacheBtn");
 const themeButtons = Array.from(document.querySelectorAll(".theme-btn"));
 const cardTemplate = document.getElementById("cardTemplate");
 
@@ -186,6 +187,24 @@ themeButtons.forEach((btn) => {
   btn.addEventListener("click", () => setTheme(btn.dataset.theme));
 });
 
+const clearCaches = async () => {
+  if ("caches" in window) {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+  }
+  const registration = await navigator.serviceWorker?.getRegistration();
+  if (registration?.active) {
+    registration.active.postMessage({ type: "CLEAR_CACHES" });
+  }
+  window.location.reload();
+};
+
+if (clearCacheBtn) {
+  clearCacheBtn.addEventListener("click", () => {
+    clearCaches();
+  });
+}
+
 const observer = new IntersectionObserver(
   (entries) => {
     if (entries[0].isIntersecting) {
@@ -198,3 +217,22 @@ const observer = new IntersectionObserver(
 initTheme();
 observer.observe(scrollSentinel);
 loadNextPage();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js");
+  });
+}
+
+if ("serviceWorker" in navigator && clearCacheBtn) {
+  if (navigator.serviceWorker.controller) {
+    clearCacheBtn.hidden = false;
+  }
+  navigator.serviceWorker.ready
+    .then(() => {
+      clearCacheBtn.hidden = false;
+    })
+    .catch(() => {
+      clearCacheBtn.hidden = true;
+    });
+}

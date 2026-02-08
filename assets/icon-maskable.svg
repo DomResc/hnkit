@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="HNKit icon">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffb347" />
+      <stop offset="100%" stop-color="#ff8a3d" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="#0b0c10" />
+  <rect x="72" y="72" width="368" height="368" rx="96" fill="url(#g)" />
+  <path
+    d="M170 332V180h38v58h68v-58h38v152h-38v-60h-68v60h-38z"
+    fill="#0b0c10"
+  />
+</svg>

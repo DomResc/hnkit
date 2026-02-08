@@ -15,6 +15,10 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#0b0c10" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
   </head>
   <body>
     <div class="ambient">
@@ -32,6 +36,9 @@
       </div>
       <div class="controls">
         <button class="pill" id="refreshBtn" type="button">Aggiorna</button>
+        <button class="pill ghost" id="clearCacheBtn" type="button" hidden>
+          Svuota cache
+        </button>
         <div class="theme-toggle" role="group" aria-label="Selezione tema">
           <button class="theme-btn" data-theme="dark" type="button">
             Scuro

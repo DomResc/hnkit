@@ -193,6 +193,10 @@ h1 {
     border var(--transition);
 }
 
+.pill.ghost {
+  background: transparent;
+}
+
 .pill:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-subtle);
